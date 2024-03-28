@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:front/repository/commons.dart';
+import 'package:front/entities/Group.dart';
 
 final api = ApiClient();
 
@@ -10,10 +11,6 @@ Future postGroupInfo(data) async {
   return res.toString();
 }
 
-// Future<Response?> postGroupInfo(Map<String, dynamic> data) async {
-//   final res = await api.post('/groups', data: data);
-//   return res; // res.data 대신 res를 반환
-// }
 
 //그룹 목록 조회(완)
 Future<Response> getGroupList() async {
@@ -26,6 +23,16 @@ Future<Response> getGroupList() async {
   }
 }
 
+//그룹 상세 조회(완)
+Future<Group> getGroupDetail(groupId) async {
+  try {
+    final res = await api.get('/groups/$groupId');
+    return Group.fromJson(res.data);;
+  } catch (err) {
+    print(err);
+    throw Exception('그룹 조회 실패');
+  }
+}
 //그룹 나가기(완)
 Future<void> deleteGroup(groupId) async {
   try {
@@ -37,7 +44,7 @@ Future<void> deleteGroup(groupId) async {
   }
 }
 
-//그룹 멤버 조회
+//그룹 멤버 조회(완)
 Future<Response> getGroupMemberList(groupId) async {
   try {
     final res = await api.get('/groups/$groupId/members');
@@ -49,9 +56,9 @@ Future<Response> getGroupMemberList(groupId) async {
 }
 
 //그룹 멤버 초대
-Future<void> inviteMemberToGroup(data, groupId) async {
+Future<void> inviteMemberToGroup(groupId) async {
   try {
-    final res = await api.post('/groups/$groupId/invite', data: data);
+    final res = await api.post('/groups/$groupId/invite');
     return res.data;
   } catch (err) {
     print(err);

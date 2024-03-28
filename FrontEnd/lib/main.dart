@@ -1,8 +1,13 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:front/repository/api/ApiGroup.dart';
 import 'package:front/screen/LoadingPage.dart';
+import 'package:front/screen/MainPage.dart';
+import 'package:front/screen/groupscreens/GroupItem.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+
 import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
 import 'package:front/routes.dart';
 import "package:front/providers/store.dart";
@@ -29,15 +34,20 @@ void initializeNotification() async {
   });
 
   final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-  await flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()?.createNotificationChannel(
-      const AndroidNotificationChannel('high_importance_chanel', 'high_importance_notification', importance: Importance.max));
+  await flutterLocalNotificationsPlugin
+      .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>()
+      ?.createNotificationChannel(const AndroidNotificationChannel(
+          'high_importance_chanel', 'high_importance_notification',
+          importance: Importance.max));
   await flutterLocalNotificationsPlugin.initialize(
       const InitializationSettings(
         android: AndroidInitializationSettings("@ipmap/ic_launcher"),
       ), onDidReceiveNotificationResponse: (details) {
     print("1111메세지 받고싶다..: ${details}");
   }, onDidReceiveBackgroundNotificationResponse: backgroundHandler);
-  await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(alert: true, badge: true, sound: true);
+  await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+      alert: true, badge: true, sound: true);
 
   FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
     RemoteNotification? notification = message.notification;
@@ -47,7 +57,9 @@ void initializeNotification() async {
           notification.title,
           notification.body,
           const NotificationDetails(
-            android: AndroidNotificationDetails('high_importance_chanel', 'high_importance_notification', importance: Importance.max),
+            android: AndroidNotificationDetails(
+                'high_importance_chanel', 'high_importance_notification',
+                importance: Importance.max),
           ),
           payload: message.data['test_params1']);
       print("메세지 받았슴다~~~~~~~");
@@ -83,6 +95,29 @@ Future<void> main() async {
     ),
   );
 }
+
+final _router = GoRouter(
+  routes: [
+    GoRoute(
+        path: '/',
+        builder: (context, state) => const MainPage(),
+        routes: <RouteBase>[
+          GoRoute(
+            path: 'groups/:groupId/invite',
+            builder: (context, state) {
+              final groupIdString = state.pathParameters['groupId'];
+              final groupId = groupIdString != null ? int.tryParse(groupIdString) : null;
+              if (groupId == null) {
+                throw Exception('Invalid group ID');
+              }
+              return GroupItem(groupId: groupId);
+            },
+          ),
+        ]
+    ),
+  ],
+);
+
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
