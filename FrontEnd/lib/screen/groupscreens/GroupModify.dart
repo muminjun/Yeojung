@@ -250,6 +250,7 @@ class _GroupModifyState extends State<GroupModify> {
     });
 
     Group modifiedGroup = Group(
+      groupId: widget.group.groupId,
       groupName: _titleController.text,
       theme: _descriptionController.text,
       startDate: _startDateText.toString(),

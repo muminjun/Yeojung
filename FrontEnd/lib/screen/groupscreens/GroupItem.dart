@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:front/components/groups/GroupJoinMember.dart';
 import 'package:front/components/groups/GroupYesCal.dart';
 import 'package:front/components/groups/GroupNoCal.dart';
-import 'package:front/models/button/Button.dart';
+import 'package:front/models/button/FinalButton.dart';
 import 'package:front/screen/groupscreens/GroupDetail.dart';
 import '../../entities/Group.dart';
 
@@ -62,7 +62,7 @@ class GroupItem extends StatelessWidget {
               GroupJoinMember(group: group),
 
               // 정산하기 버튼
-              Button(
+              FinalButton(
 
                 btnText: '정산하기',
                 onPressed: () {

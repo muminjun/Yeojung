@@ -1,7 +1,7 @@
 import 'GroupMember.dart';
 
 class Group {
-  final int? groupId;
+  final int groupId;
   final String groupName;
   final String theme;
   final String startDate;
@@ -11,7 +11,7 @@ class Group {
   final List<GroupMember> groupMembers;
 
   Group({
-    this.groupId,
+    required this.groupId,
     required this.groupName,
     required this.theme,
     required this.startDate,

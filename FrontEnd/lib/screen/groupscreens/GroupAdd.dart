@@ -8,6 +8,7 @@ import 'package:front/models/button/GroupAddButton2.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:flutter/services.dart';
 import 'package:front/const/colors/Colors.dart';
+import 'package:uni_links/uni_links.dart';
 import '../../entities/Group.dart';
 import '../../models/button/ButtonSlideAnimation.dart';
 import 'package:front/repository/api/ApiGroup.dart';
@@ -62,19 +63,25 @@ class _GroupAddState extends State<GroupAdd> {
       final response = await postGroupInfo(groupData);
       if (response != null) {
         print("그룹이 성공적으로 생성되었습니다.");
+        print(response.toString());
+        var res = response;
 
-        Group newGroup = Group(
-          groupName: _titleController.text,
-          theme: _descriptionController.text,
-          startDate: startDateText,
-          endDate: endDateText,
-          groupState: false,
-          isCalculateDone: false,
-          groupMembers: [],
-        );
+        // Group newGroup = Group(
+        //   groupId: 0,
+        //   groupName: _titleController.text,
+        //   theme: _descriptionController.text,
+        //   startDate: startDateText,
+        //   endDate: endDateText,
+        //   groupState: false,
+        //   isCalculateDone: false,
+        //   groupMembers: [],
+        // );
         buttonSlideAnimationPushAndRemoveUntil(context, 1);
         // Navigator.pop(context, newGroup);
-        FirstInviteModal.showInviteModal(context, newGroup);
+        linkStream.listen((event) {
+          print(event);
+        });
+        FirstInviteModal.showInviteModal(context, res);
       } else {
         print("그룹 생성에 실패했습니다.");
       }
