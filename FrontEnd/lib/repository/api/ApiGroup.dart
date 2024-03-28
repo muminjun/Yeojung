@@ -4,10 +4,16 @@ import 'package:front/repository/commons.dart';
 final api = ApiClient();
 
 //그룹 생성(완)
-Future<Response?> postGroupInfo(Map<String, dynamic> data) async {
+Future postGroupInfo(data) async {
   final res = await api.post('/groups', data: data);
-  return res; // res.data 대신 res를 반환
+  print(res.runtimeType);
+  return res.toString();
 }
+
+// Future<Response?> postGroupInfo(Map<String, dynamic> data) async {
+//   final res = await api.post('/groups', data: data);
+//   return res; // res.data 대신 res를 반환
+// }
 
 //그룹 목록 조회(완)
 Future<Response> getGroupList() async {
