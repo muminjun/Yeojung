@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,6 +12,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:uni_links/uni_links.dart';
+
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   print("Handling a background message: ${message.messageId}");
@@ -51,6 +55,13 @@ Future<void> main() async {
     // 앱이 Terminated 상태에서 시작되었을 때 처리
     print("Initial message: ${initialMessage.messageId}");
   }
+
+  WidgetsFlutterBinding.ensureInitialized();
+  uriLinkStream.listen((Uri? uri) {
+    log("uri: $uri");
+  }, onError: (Object err) {
+    log("err: $err");
+  });
 
   runApp(
     ChangeNotifierProvider(

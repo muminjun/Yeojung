@@ -65,6 +65,7 @@ class _GroupListState extends State<GroupList> {
         },
       ),
 
+
       floatingActionButton: FloatingActionButton(
         onPressed: navigateToGroupAdd,
         child: Icon(Icons.add, color: Colors.white), // Icon의 color 속성에 Colors.white를 추가
