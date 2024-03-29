@@ -14,7 +14,6 @@ import 'package:front/routes.dart';
 import "package:front/providers/store.dart";
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:uni_links/uni_links.dart';
 import 'firebase_options.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -90,13 +89,7 @@ Future<void> main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-  // 이 부분을 추가
-  WidgetsFlutterBinding.ensureInitialized();
-  uriLinkStream.listen((Uri? uri) {
-    log("uri: $uri");
-  }, onError: (Object err) {
-    log("err: $err");
-  });
+
   print('키 해시: ${await KakaoSdk.origin}');
   // LD8/P2w/Yz8/Pz8K
 
