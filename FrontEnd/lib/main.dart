@@ -22,6 +22,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
+  print("백그라운드에서 메시지 수신: 메시지 ID: ${message.messageId}, 데이터: ${message.data}");
 }
 
 @pragma('vm:entry-point')
@@ -96,6 +97,8 @@ Future<void> main() async {
   }, onError: (Object err) {
     log("err: $err");
   });
+  print('키 해시: ${await KakaoSdk.origin}');
+  // LD8/P2w/Yz8/Pz8K
 
   runApp(
     ChangeNotifierProvider(
