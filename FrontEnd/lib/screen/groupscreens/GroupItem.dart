@@ -18,7 +18,7 @@ class GroupItem extends StatelessWidget {
       appBar: AppBar(
         scrolledUnderElevation: 0,
         title: FutureBuilder<Group>(
-          future: getGroupDetail(groupId), // 비동기적으로 그룹 상세 정보를 가져옴
+          future: getGroupDetail(groupId),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
               if (snapshot.hasData) {
