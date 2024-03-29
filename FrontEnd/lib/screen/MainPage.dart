@@ -47,11 +47,11 @@ class _MainPageState extends State<MainPage> {
     }
   }
   // void _launchURL() async {
-  //   const url = 'yeojung://example.com';
-  //   if (await canLaunchUrl(url)) {
-  //     await canLaunchUrl(url);
+  //   final Uri _url = Uri.parse('yeojung://example.com');
+  //   if (await canLaunchUrl(_url)) {
+  //     await launchUrl(_url);
   //   } else {
-  //     throw 'Could not launch $url';
+  //     throw 'Could not launch $_url';
   //   }
   // }
 
