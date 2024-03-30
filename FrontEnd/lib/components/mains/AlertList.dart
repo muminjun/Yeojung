@@ -1,36 +1,66 @@
 import 'package:flutter/material.dart';
 import 'package:front/models/button/ButtonSlideAnimation.dart';
+import 'package:front/entities/Notification.dart';
+import '../../repository/api/ApiFcm.dart';
 
-class AlertList extends StatelessWidget {
+class AlertList extends StatefulWidget {
   const AlertList({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    final List<String> alerts = [
-      "알림 1",
-      "알림 2",
-      "알림 3",
-    ];
+  State<AlertList> createState() => _AlertListState();
+}
+class _AlertListState extends State<AlertList> {
+  List<Notificate> notifications = [];
+  bool isLoading = false;
 
+  @override
+  void initState() {
+    super.initState();
+    fetchGroups();
+  }
+
+  void fetchGroups() async {
+    setState(() {
+      isLoading = true;
+    });
+    final notificationsJson = await sendNotiPersonal(); // API 호출
+    if (notificationsJson != null && notificationsJson.data is List) {
+      setState(() {
+        notifications = (notificationsJson.data as List)
+            .map((item) => Notificate.fromJson(item))
+            .toList(); // 데이터 파싱
+        isLoading = false;
+      });
+    } else {
+      setState(() {
+        isLoading = false;
+      });
+      print("알람 데이터를 불러오는 데 실패했습니다.");
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         scrolledUnderElevation: 0,
         title: Text('알림 리스트'),
         leading: IconButton(
-          icon: Icon(Icons.close), // 'X' 아이콘 사용
+          icon: Icon(Icons.close),
           onPressed: () {
-            // 여기서 buttonSlideAnimationPushAndRemoveUntil 함수 호출
-            // 이 예제에서는 함수의 구현이 주어지지 않았으므로 가상의 함수로 가정합니다.
-            // 실제 함수명과 매개변수는 필요에 따라 조정해 주세요.
             Navigator.pop(context);
           },
         ),
       ),
-      body: ListView.builder(
-        itemCount: alerts.length,
+      body: isLoading
+          ? Center(child: CircularProgressIndicator())
+          : ListView.builder(
+        itemCount: notifications.length,
         itemBuilder: (context, index) {
+          final notification = notifications[index];
           return ListTile(
-            title: Text(alerts[index]),
+            title: Text(notification.title),
+            subtitle: Text(notification.content),
           );
         },
       ),

@@ -12,7 +12,19 @@ void groupInviteByEmail(BuildContext context, Group group, List<GroupMember> mem
 
 
       return AlertDialog(
-        title: Text('인원 추가'),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text('인원 추가'),
+
+            IconButton(
+              icon: Icon(Icons.close),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
         content: SingleChildScrollView(
           child: ListBody(
             children: <Widget>[
@@ -32,14 +44,6 @@ void groupInviteByEmail(BuildContext context, Group group, List<GroupMember> mem
             ],
           ),
         ),
-        actions: <Widget>[
-          TextButton(
-            child: Text('취소'),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
       );
     },
   );
