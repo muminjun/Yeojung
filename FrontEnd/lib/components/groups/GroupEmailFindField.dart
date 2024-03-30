@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../entities/Member.dart';
 import 'package:front/repository/api/ApiGroup.dart';
 
@@ -25,6 +26,7 @@ class _GroupEmailFindFieldState extends State<GroupEmailFindField> {
   final _formKey = GlobalKey<FormState>();
   Member? _searchResult;
   List<String> inviteMember = [];
+  List<Map<String, dynamic>> userInfoList = [];
 
   @override
   Widget build(BuildContext context) {
@@ -56,28 +58,28 @@ class _GroupEmailFindFieldState extends State<GroupEmailFindField> {
                             bool isAlreadyInvited =
                                 inviteMember.contains(_searchResult!.kakaoId);
 
-                            // 그룹 내에 있는 멤버일 경우 제외
-                            if (isAlreadyMember) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                    content: Text("이미 참가한 멤버입니다",
-                                        style: TextStyle(color: Colors.red))),
-                              );
-                              widget.controller.clear();
-                            } else if (isAlreadyInvited) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                    content: Text("이미 추가한 멤버입니다",
-                                        style: TextStyle(color: Colors.red))),
-                              );
-                              widget.controller.clear();
-                            } else {
+                            if (!isAlreadyMember && !isAlreadyInvited) {
+                              userInfoList.add({
+                                'name': _searchResult!.name,
+                                'thumbnailImage': _searchResult!.thumbnailImage,
+                              });
                               inviteMember.add(_searchResult!.kakaoId!);
-                              widget.controller.clear();
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    isAlreadyMember
+                                        ? "이미 참가한 멤버입니다"
+                                        : "이미 추가한 멤버입니다",
+                                    style: TextStyle(color: Colors.red),
+                                  ),
+                                ),
+                              );
                             }
+                            widget.controller.clear();
                           }
                         });
-                      } else {
+                      }  else {
                         setState(() {
                           _searchResult = null;
                         });
@@ -107,6 +109,47 @@ class _GroupEmailFindFieldState extends State<GroupEmailFindField> {
             },
           ),
         ),
+        // 사용자 정보 리스트를 화면에 표시합니다.
+        if (userInfoList.isNotEmpty) ...[
+          Container(
+            height: 100.h, // 컨테이너 높이 설정
+            child: ListView.builder( // 가로 스크롤 가능한 리스트 뷰
+              scrollDirection: Axis.horizontal, // 리스트를 가로로 스크롤
+              itemCount: userInfoList.length, // 리스트 아이템 개수
+              itemBuilder: (context, index) {
+                var userInfo = userInfoList[index];
+                return Container( // 각 아이템을 위한 컨테이너
+                  width: 80.w, // 아이템 너비 설정
+                  child: Column( // 이미지와 텍스트를 세로로 배치
+                    children: [
+                      ClipOval( // 이미지를 동그라미 형태로 클립
+                        child: userInfo['thumbnailImage'] != null
+                            ? Image.network(
+                          userInfo['thumbnailImage'],
+                          width: 60.w, // 이미지 너비
+                          height: 60.h, // 이미지 높이
+                          fit: BoxFit.cover, // 이미지 채우기 방식
+                        )
+                            : Icon(
+                          Icons.account_circle,
+                          size: 60, // 아이콘 크기
+                        ),
+                      ),
+                      SizedBox(height: 8.h), // 이미지와 텍스트 사이 여백
+                      Text(
+                        userInfo['name'],
+                        style: TextStyle(fontSize: 16.sp),
+                        overflow: TextOverflow.ellipsis, // 텍스트가 넘치면 생략표시
+                      ),
+                    ],
+                  ),
+                  margin: EdgeInsets.symmetric(horizontal: 10), // 좌우 마진 설정
+                );
+              },
+            ),
+          ),
+        ],
+
 
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 20.0),
