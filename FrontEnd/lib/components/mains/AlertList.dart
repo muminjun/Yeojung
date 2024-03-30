@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:front/models/button/ButtonSlideAnimation.dart';
 import 'package:front/entities/Notification.dart';
+import 'package:lottie/lottie.dart';
 import '../../repository/api/ApiFcm.dart';
 
 class AlertList extends StatefulWidget {
@@ -9,6 +11,7 @@ class AlertList extends StatefulWidget {
   @override
   State<AlertList> createState() => _AlertListState();
 }
+
 class _AlertListState extends State<AlertList> {
   List<Notificate> notifications = [];
   bool isLoading = false;
@@ -23,7 +26,7 @@ class _AlertListState extends State<AlertList> {
     setState(() {
       isLoading = true;
     });
-    final notificationsJson = await sendNotiPersonal(); // API 호출
+    final notificationsJson = await sendNotiPersonal();
     if (notificationsJson != null && notificationsJson.data is List) {
       setState(() {
         notifications = (notificationsJson.data as List)
@@ -53,17 +56,58 @@ class _AlertListState extends State<AlertList> {
         ),
       ),
       body: isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Lottie.asset('assets/lotties/orangewalking.json'),
+                  SizedBox(height: 20.h),
+                  Text("알림을 불러오고 있습니다"),
+                ],
+              ),
+            )
           : ListView.builder(
-        itemCount: notifications.length,
-        itemBuilder: (context, index) {
-          final notification = notifications[index];
-          return ListTile(
-            title: Text(notification.title),
-            subtitle: Text(notification.content),
-          );
-        },
-      ),
+              itemCount: notifications.length,
+              itemBuilder: (context, index) {
+                final notification = notifications[index];
+                Icon icon;
+                switch (notification.type) {
+                  case 'INVITE':
+                    icon = Icon(Icons.people);
+                    break;
+                  case 'URGE':
+                    icon = Icon(Icons.priority_high);
+                    break;
+                  case 'SPLIT_MODIFY':
+                    icon = Icon(Icons.edit);
+                    break;
+                  case 'TRANSFER':
+                    icon = Icon(Icons.done_all);
+                    break;
+                  case 'NO_MONEY':
+                    icon = Icon(Icons.credit_card_off);
+                    break;
+                  default:
+                    icon = Icon(Icons.done);
+                }
+                return ListTile(
+                  leading: icon,
+                  title: Text(
+                    notification.title,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20.sp,
+                    ),
+                  ),
+                  subtitle: Column(
+                    children: [
+                      Text(notification.content),
+                    ],
+                  ),
+                );
+              },
+            ),
     );
   }
 }

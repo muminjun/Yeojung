@@ -47,15 +47,6 @@ class _MainPageState extends State<MainPage> {
     }
   }
 
-  // void _launchURL() async {
-  //   final Uri _url = Uri.parse('yeojung://example.com');
-  //   if (await canLaunchUrl(_url)) {
-  //     await launchUrl(_url);
-  //   } else {
-  //     throw 'Could not launch $_url';
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -103,10 +94,7 @@ class _MainPageState extends State<MainPage> {
               : Expanded(
                   child: NowTravelList(groups: groups),
                 ),
-          // Expanded(child: ElevatedButton(
-          //   onPressed: _launchURL,
-          //   child: Text('Open yeojung://example.com'),
-          // ),),
+
           Expanded(
             child: PastTravelList(groups: groups),
           ),
