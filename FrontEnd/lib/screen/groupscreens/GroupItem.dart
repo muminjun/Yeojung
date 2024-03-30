@@ -13,7 +13,6 @@ class GroupItem extends StatelessWidget {
 
   GroupItem({required this.groupId});
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,7 +28,6 @@ class GroupItem extends StatelessWidget {
                 return Text('그룹 정보 조회 실패');
               }
             }
-            // 데이터 로딩 중이면 로딩 인디케이터 표시
             return CircularProgressIndicator();
           },
         ),
@@ -64,7 +62,6 @@ class GroupItem extends StatelessWidget {
                 child: Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-
                     children: [
                       Container(
                         constraints: BoxConstraints(minHeight: 150.h),
@@ -72,12 +69,16 @@ class GroupItem extends StatelessWidget {
                           child: GroupJoinMember(group: group),
                         ),
                       ),
+                      Container(
+
+                      ),
+
                       // 정산하기 버튼
                       Button(
                         btnText: '정산하기',
                         onPressed: () {},
                       ),
-                      //정산요청 내역이 있으면
+                      // 정산요청 내역이 있으면
                       // 정산 요청 내역
                       GroupYesCal(
                         groupId: group.groupId ?? 0,
