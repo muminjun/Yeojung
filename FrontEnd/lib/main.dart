@@ -20,8 +20,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp();
-  print("백그라운드에서 메시지 수신: 메시지 ID: ${message.messageId}, 데이터: ${message.data}");
+  print("백그라운드에서 오는 메세지: ${message.data}");
 }
 
 @pragma('vm:entry-point')
@@ -30,26 +29,16 @@ void backgroundHandler(NotificationResponse details) {
 }
 
 void initializeNotification() async {
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    print("포그라운드에서 1212메시지 수신: ${message}");
-  });
-
   final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-  await flutterLocalNotificationsPlugin
-      .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>()
-      ?.createNotificationChannel(const AndroidNotificationChannel(
-          'high_importance_chanel', 'high_importance_notification',
-          importance: Importance.max));
+  await flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()?.createNotificationChannel(
+      const AndroidNotificationChannel('high_importance_chanel', 'high_importance_notification', importance: Importance.max));
   await flutterLocalNotificationsPlugin.initialize(
       const InitializationSettings(
         android: AndroidInitializationSettings("@ipmap/ic_launcher"),
       ), onDidReceiveNotificationResponse: (details) {
     print("1111메세지 받고싶다..: ${details}");
   }, onDidReceiveBackgroundNotificationResponse: backgroundHandler);
-  await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
-      alert: true, badge: true, sound: true);
+  await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(alert: true, badge: true, sound: true);
 
   FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
     RemoteNotification? notification = message.notification;
@@ -59,11 +48,10 @@ void initializeNotification() async {
           notification.title,
           notification.body,
           const NotificationDetails(
-            android: AndroidNotificationDetails(
-                'high_importance_chanel', 'high_importance_notification',
-                importance: Importance.max),
+            android: AndroidNotificationDetails('high_importance_channel', 'high_importance_notification', importance: Importance.max),
           ),
           payload: message.data['test_params1']);
+
       print("메세지 받았슴다~~~~~~~");
     }
   });
@@ -77,7 +65,7 @@ void initializeNotification() async {
 Future<void> main() async {
   await dotenv.load(fileName: "yeojung-env/ssafy_c203_env/.env");
   WidgetsFlutterBinding.ensureInitialized();
-
+  initializeNotification();
   KakaoSdk.init(
     nativeAppKey: dotenv.env['KAKAO_NATIVE_APP_KEY']!,
     javaScriptAppKey: dotenv.env['KAKAO_JAVASCRIPT_APP_KEY']!,
@@ -85,6 +73,7 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
@@ -100,7 +89,6 @@ Future<void> main() async {
     ),
   );
 }
-
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
