@@ -1,18 +1,36 @@
 package com.orange.fintech.payment.service;
 
+import com.orange.fintech.account.entity.Account;
+import com.orange.fintech.account.repository.AccountRepository;
+import com.orange.fintech.account.service.AccountService;
 import com.orange.fintech.group.dto.GroupMembersDto;
 import com.orange.fintech.group.dto.GroupMembersListDto;
+import com.orange.fintech.group.entity.CalculateResult;
+import com.orange.fintech.group.entity.Group;
+import com.orange.fintech.group.entity.GroupMember;
+import com.orange.fintech.group.entity.GroupMemberPK;
+import com.orange.fintech.group.repository.CalculateResultRepository;
+import com.orange.fintech.group.repository.GroupMemberRepository;
+import com.orange.fintech.group.repository.GroupRepository;
 import com.orange.fintech.group.service.GroupService;
+import com.orange.fintech.member.entity.Member;
+import com.orange.fintech.member.repository.MemberRepository;
+import com.orange.fintech.notification.Dto.MessageListDataReqDto;
+import com.orange.fintech.notification.entity.NotificationType;
+import com.orange.fintech.notification.service.FcmService;
 import com.orange.fintech.payment.dto.CalculateResultDto;
 import com.orange.fintech.payment.dto.TransactionDto;
 import com.orange.fintech.payment.dto.YeojungDto;
 import com.orange.fintech.payment.repository.TransactionQueryRepository;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.io.IOException;
+import java.util.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,8 +40,18 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class CalculateServiceImpl implements CalculateService {
 
+    private final AccountService accountService;
+    private final AccountRepository accountRepository;
     private final GroupService groupService;
+    private final FcmService fcmService;
+    private final GroupMemberRepository groupMemberRepository;
     private final TransactionQueryRepository transactionQueryRepository;
+    private final MemberRepository memberRepository;
+    private final GroupRepository groupRepository;
+    private final CalculateResultRepository calculateResultRepository;
+
+    @Value("${ssafy.bank.transfer")
+    private String transferUri;
 
     /**
      * memberId가 다른 그룹원들에게 얼마를 주고받아야하는지
@@ -98,11 +126,12 @@ public class CalculateServiceImpl implements CalculateService {
      * @param groupId
      * @param lastMemberId
      */
-    public List<CalculateResultDto> finalCalculator(int groupId, String lastMemberId) {
+    public List<CalculateResultDto> finalCalculator(int groupId, String lastMemberId)
+            throws ParseException, IOException {
         GroupMembersListDto listDto = groupService.findGroupMembers(groupId);
 
-        List<Member> plus = new ArrayList<>();
-        List<Member> minus = new ArrayList<>();
+        List<CalMember> plus = new ArrayList<>(); // 돈을 받아야하는 인원
+        List<CalMember> minus = new ArrayList<>(); // 돈을 줘야하는 인원
 
         int remainder = transactionQueryRepository.sumOfRemainder(groupId);
 
@@ -113,11 +142,54 @@ public class CalculateServiceImpl implements CalculateService {
             }
 
             if (amount >= 0) {
-                plus.add(new Member(amount, dto.getKakaoId()));
+                plus.add(new CalMember(amount, dto.getKakaoId()));
             } else {
-                minus.add(new Member(amount, dto.getKakaoId()));
+                minus.add(new CalMember(amount, dto.getKakaoId()));
             }
         }
+        // Todo 여기임!!!!!!!!! ==> 돈을 보내야하는 인원의 계좌를 확인 후 잔액이 부족한 회원 기록 후, 비동기로 알림을 보낸다. 테스트해봐야함!
+
+        JSONParser parser = new JSONParser();
+        List<String> noMoneysKakaoId = new ArrayList<>();
+
+        for (CalMember member : minus) {
+            Optional<Member> opMember = memberRepository.findById(member.kakaoId);
+            Member curMember = null;
+            if (opMember.isPresent()) {
+                curMember = opMember.get();
+            }
+
+            Account pAccount = accountRepository.findByMemberAndIsPrimaryAccountIsTrue(curMember);
+            String result = accountService.inquireAccountBalance(curMember, pAccount);
+            JSONObject jsonObject = (JSONObject) parser.parse(result);
+            JSONObject data = (JSONObject) jsonObject.get("REC");
+            String balanceString = (String) data.get("accountBalance");
+            Long balance = Long.parseLong(balanceString);
+
+            // 잔액이 부족한 놈 아이디 저장함.
+            if (balance + member.amount < 0) {
+                noMoneysKakaoId.add(member.kakaoId);
+                // 해당 그룹에서 회원의 2차 정산 상태를 변경한다.
+                GroupMemberPK groupMemberPK = new GroupMemberPK();
+                Group group = new Group();
+                group.setGroupId(groupId);
+                Member noMoneyMember = new Member();
+                noMoneyMember.setKakaoId(member.kakaoId);
+                groupMemberPK.setGroup(group);
+                groupMemberPK.setMember(noMoneyMember);
+                GroupMember groupMember = groupMemberRepository.findById(groupMemberPK).get();
+                groupMember.setSecondCallDone(false);
+                groupMemberRepository.save(groupMember);
+            }
+        }
+        // 돈이 부족한 사람이 있으면 fcm호출하고 정산을 종료한다.
+        if(!noMoneysKakaoId.isEmpty()){
+            fcmService.noMoneyFcm(noMoneysKakaoId,groupId);
+            return null;
+        }
+
+
+
 
         // 초기화
         minTransaction = new int[minus.size()];
@@ -207,8 +279,7 @@ public class CalculateServiceImpl implements CalculateService {
     int minTransaction[];
 
     @Override
-    public void transactionSimulation(
-            int[] np, List<CalculateService.Member> plus, List<CalculateService.Member> minus) {
+    public void transactionSimulation(int[] np, List<CalMember> plus, List<CalMember> minus) {
         long[] remains = new long[plus.size()];
         for (int i = 0; i < plus.size(); i++) {
             remains[i] = plus.get(i).amount;
@@ -254,7 +325,43 @@ public class CalculateServiceImpl implements CalculateService {
     }
 
     @Override
-    public void transfer(List<CalculateResultDto> calResults, int groupId) {}
+    public void transfer(List<CalculateResultDto> calResults, int groupId) throws IOException {
+        // 회원 목록
+        HashMap<String, String> getdistinctMemberId = new HashMap<>();
+        // 송금
+        for (CalculateResultDto calResult : calResults) {
+            accountService.transfer(
+                    calResult.getSendMemberId(),
+                    calResult.getReceiveMemberId(),
+                    calResult.getAmount());
+            getdistinctMemberId.put(calResult.getReceiveMemberId(), calResult.getReceiveMemberId());
+            getdistinctMemberId.put(calResult.getSendMemberId(), calResult.getSendMemberId());
+        }
+
+        Group group = groupRepository.findById(groupId).get();
+
+        // 송금 후 저장
+        for (CalculateResultDto calResult : calResults) {
+            CalculateResult calculateResult = new CalculateResult();
+            calculateResult.setGroup(group);
+            calculateResult.setAmount(calResult.getAmount());
+            calculateResult.setSendMember(
+                    memberRepository.findById(calResult.getSendMemberId()).get());
+            calculateResult.setReceiveMember(
+                    memberRepository.findById(calResult.getReceiveMemberId()).get());
+            calculateResultRepository.save(calculateResult);
+        }
+
+        // 정산했던 회원들 아이디 추출
+        Collection<String> distinctMemberId = getdistinctMemberId.values();
+        List<String> calculateMembers = new ArrayList<>(distinctMemberId);
+
+        MessageListDataReqDto messageListDataReqDto = new MessageListDataReqDto();
+        messageListDataReqDto.setTargetMembers(calculateMembers);
+        messageListDataReqDto.setGroupId(groupId);
+        messageListDataReqDto.setNotificationType(NotificationType.TRANSFER);
+        fcmService.pushListDataMSG(messageListDataReqDto);
+    }
 
     private boolean np(int[] p) {
         int N = p.length;

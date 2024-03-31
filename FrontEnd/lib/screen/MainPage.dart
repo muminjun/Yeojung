@@ -92,7 +92,7 @@ class _MainPageState extends State<MainPage> {
                 )
               :
 //groups[index]해서 해당 그룹의 isCalculateDone ==0이면 nowtravel 아니면 pasttravel
-          Expanded(
+              Expanded(
                   child: NowTravelList(groups: groups),
                 ),
           Expanded(

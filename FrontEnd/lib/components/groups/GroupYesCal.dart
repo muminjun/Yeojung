@@ -25,6 +25,7 @@ class GroupYesCal extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+
               Text(
                 '정산 요청 내역',
                 style: TextStyle(

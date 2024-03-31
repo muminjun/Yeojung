@@ -26,13 +26,13 @@ class FirstInviteModal {
   }
 
   static void sharePressed(context) {
-    String inviteLink =
-        'https://halgatewood.com/deeplink?link=yeojung%3A%2F%2Fexample.com';
+
+    String inviteLink = 'https://halgatewood.com/deeplink?link=yeojung%3A%2F%2Fexample.com';
     Navigator.of(context).pop();
 
     Share.share('그룹에 참가하려면 다음 링크에서 YEOJUNG://example.com를 클릭하세요!: $inviteLink');
-  }
 
+  }
   static void cancelPressed(BuildContext context) {
     Navigator.of(context).pop();
   }

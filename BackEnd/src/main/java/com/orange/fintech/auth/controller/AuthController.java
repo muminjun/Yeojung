@@ -6,11 +6,18 @@ import com.orange.fintech.common.BaseResponseBody;
 import com.orange.fintech.jwt.JWTUtil;
 import com.orange.fintech.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+
+import java.io.IOException;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -60,9 +67,20 @@ public class AuthController {
         return ResponseEntity.ok(BaseResponseBody.of(500, "로그아웃 실패"));
     }
 
-    @GetMapping("/test")
-    public ResponseEntity<?> test() {
+    @GetMapping("/test/token")
+    @Operation(summary = "jwt token 생성기", description = "token 생성")
+    public ResponseEntity<?> token(
+            @Parameter(description = "name") @RequestParam String name,
+            @Parameter(description = "kakao_id") @RequestParam String kakaoId) {
+        String accessToken =
+                jWTUtil.createAccessToken(
+                        name, kakaoId, Date.from(Instant.now().plus(30, ChronoUnit.DAYS)));
 
-        return ResponseEntity.ok(BaseResponseBody.of(200, "연결댐"));
+        return ResponseEntity.status(200).body(accessToken);
+    }
+
+    @GetMapping("/test")
+    public ResponseEntity<?> test() throws ParseException, IOException {
+                return ResponseEntity.ok(BaseResponseBody.of(200, "연결댐"));
     }
 }

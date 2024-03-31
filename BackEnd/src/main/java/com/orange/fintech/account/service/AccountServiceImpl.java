@@ -72,6 +72,9 @@ public class AccountServiceImpl implements AccountService {
     @Value("${ssafy.bank.drawing.transfer}")
     private String drawingTransferUrl;
 
+    @Value("${ssafy.bank.transfer}")
+    private String transferUri;
+
     Random random = new Random();
 
     @Override
@@ -173,22 +176,16 @@ public class AccountServiceImpl implements AccountService {
         JSONObject jsonObject = (JSONObject) parser.parse(responseBody);
         JSONObject REC = (JSONObject) jsonObject.get("REC");
 
+        // 이전에 등록되어있던 주계좌는 주계좌가 아닌걸로~
+        Account preAccount = accountRepository.findByMemberAndIsPrimaryAccountIsTrue(member);
+        preAccount.setIsPrimaryAccount(false);
+        accountRepository.save(preAccount);
+
         Account account = new Account();
         account.setAccountNo(REC.get("accountNo").toString());
         account.setBankCode(REC.get("bankCode").toString());
         account.setBalance(Long.parseLong(REC.get("accountBalance").toString()));
         account.setMember(member);
-
-        // 이전에 등록되어있던 주계좌는 주계좌가 아닌걸로~
-        List<Account> prePrimaryAccount =
-                accountRepository.findByMemberAndIsPrimaryAccountIsTrue(member);
-        for (Account pre : prePrimaryAccount) {
-            if (pre.getIsPrimaryAccount()) {
-
-                pre.setIsPrimaryAccount(false);
-                accountRepository.save(pre);
-            }
-        }
 
         Account saveData = accountRepository.save(account);
 
@@ -350,8 +347,8 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public List<TransactionResDto> readAllOrUpdateTransation(String memberId)
-            throws ParseException {
+    public List<TransactionResDto> readAllOrUpdateTransation(
+            String memberId, int page, int pageSize) throws ParseException {
         log.info("impl call");
 
         // DB에서 가장 최근의 데이터의 날짜와 시간을 가져온다.
@@ -359,8 +356,9 @@ public class AccountServiceImpl implements AccountService {
         //        log.info("latestData:{}",latestData); //
         // LatestDateTimeDto(transactionDate=2024-03-27, transactionTime=11:14:59)
         Member member = memberRepository.findById(memberId).get();
-        List<Account> accountList = accountRepository.findByMemberAndIsPrimaryAccountIsTrue(member);
-        Account account = accountList.get(0); // 주계좌
+        //        List<Account> accountList =
+        // accountRepository.findByMemberAndIsPrimaryAccountIsTrue(member);
+        Account account = accountRepository.findByMemberAndIsPrimaryAccountIsTrue(member); // 주계좌
 
         // 최근값 이후로 데이터 받아서 저장하기.
         RestClient restClient = RestClient.create();
@@ -386,7 +384,8 @@ public class AccountServiceImpl implements AccountService {
         List<TransactionResDto> response = new ArrayList<>();
 
         // 회원아이디로 주계좌 회원, 계좌 조인해서 회원의 주계좌 가져온다.
-        List<Transaction> transactions = accountQueryRepository.readAllOrUpdateTransation(memberId);
+        List<Transaction> transactions =
+                accountQueryRepository.readAllOrUpdateTransation(memberId, page, pageSize);
         //        log.info("transactions:{}",transactions);
         for (Transaction transaction : transactions) {
             TransactionResDto data = new TransactionResDto(transaction);
@@ -564,5 +563,46 @@ public class AccountServiceImpl implements AccountService {
             } catch (Exception e) {
             }
         }
+    }
+
+    @Override
+    public void transfer(String sendMemberId, String receiveMemberId, Long transactionBalance) {
+        boolean flag = true;
+        do {
+
+            RestClient restClient = RestClient.create();
+
+            Member sendMember = memberRepository.findById(sendMemberId).get();
+            Account sendMemberAccount =
+                    accountRepository.findByMemberAndIsPrimaryAccountIsTrue(sendMember);
+
+            Member receiveMember = memberRepository.findById(receiveMemberId).get();
+            Account receiveMemberAccount =
+                    accountRepository.findByMemberAndIsPrimaryAccountIsTrue(receiveMember);
+
+            ReqHeader reqHeader = createHeader(sendMember.getUserKey(), transferUri);
+
+            Map<String, Object> requestBody = new HashMap<>();
+            requestBody.put("Header", reqHeader);
+            requestBody.put("depositBankCode", receiveMemberAccount.getBankCode());
+            requestBody.put("depositAccountNo", receiveMemberAccount.getAccountNo());
+            requestBody.put("depositTransactionSummary", sendMember.getName());
+            requestBody.put("transactionBalance", transactionBalance);
+            requestBody.put("withdrawalBankCode", sendMemberAccount.getBankCode());
+            requestBody.put("withdrawalAccountNo", sendMemberAccount.getAccountNo());
+            requestBody.put("withdrawalTransactionSummary", receiveMember.getName());
+
+            RestClient.ResponseSpec response =
+                    restClient.post().uri(transferUri).body(requestBody).retrieve();
+            ResponseEntity<?> responseEntity = response.toEntity(String.class);
+            String responseBody = responseEntity.getBody().toString();
+            HttpStatusCode statusCode = responseEntity.getStatusCode();
+
+            // 이체 성공시 종료
+            if (statusCode.is2xxSuccessful()) {
+                flag = false;
+            }
+
+        } while (flag);
     }
 }
