@@ -1,0 +1,216 @@
+// // import 'package:dio/dio.dart';
+// // import 'package:flutter/material.dart';
+// // import 'package:flutter_screenutil/flutter_screenutil.dart';
+// // import 'package:front/components/groups/GroupCalDetail.dart';
+// // import 'package:front/components/mypage/GroupSpendItem.dart';
+// // import 'package:front/models/CustomDivider.dart';
+// // import 'package:front/models/button/ButtonSlideAnimation.dart';
+// // import 'package:front/repository/api/ApiMyPage.dart';
+// // import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+// // import 'package:intl/intl.dart';
+// //
+// // import '../../const/colors/Colors.dart';
+// //
+// // class GroupCalList extends StatefulWidget {
+// //   final int groupId;
+// //
+// //   const GroupCalList({
+// //     required this.groupId,
+// //     super.key,
+// //   });
+// //
+// //   @override
+// //   State<GroupCalList> createState() => _GroupCalListState();
+// // }
+// //
+// // class _GroupCalListState extends State<GroupCalList> {
+// //   static const _pageSize = 10;
+// //   String option = 'all';
+// //   final PagingController<int, Map<String, dynamic>> _pagingController =
+// //       PagingController(firstPageKey: 0);
+// //
+// //   @override
+// //   void initState() {
+// //     _pagingController.addPageRequestListener((pageKey) {
+// //       _fetchPage(pageKey);
+// //     });
+// //     super.initState();
+// //   }
+// //
+// //   @override
+// //   void dispose() {
+// //     _pagingController.dispose();
+// //     super.dispose();
+// //   }
+// //
+// //   Future<void> _fetchPage(int pageKey) async {
+// //     try {
+// //       Map<String, dynamic> queryParameters = {
+// //         'page': pageKey,
+// //         'size': _pageSize,
+// //         'option': option,
+// //       };
+// //       Response res = await getGroupSpend(widget.groupId, queryParameters);
+// //       if (res.data != null) {
+// //         List<Map<String, dynamic>> newData =
+// //             List<Map<String, dynamic>>.from(res.data)
+// //                 .cast<Map<String, dynamic>>();
+// //
+// //         final isLastPage = newData.length < _pageSize;
+// //         if (isLastPage) {
+// //           _pagingController.appendLastPage(newData);
+// //         } else {
+// //           final nextPageKey = pageKey + 1;
+// //           _pagingController.appendPage(newData, nextPageKey);
+// //         }
+// //       } else {
+// //         _pagingController.appendLastPage([]);
+// //       }
+// //     } catch (error) {
+// //       _pagingController.error = error;
+// //     }
+// //   }
+// //
+// //   @override
+// //   Widget build(BuildContext context) {
+// //     return Expanded(
+// //       child: RefreshIndicator(
+// //         onRefresh: () => Future.sync(
+// //           () => _pagingController.refresh(),
+// //         ),
+// //         child: PagedListView<int, Map<String, dynamic>>(
+// //           pagingController: _pagingController,
+// //           builderDelegate: PagedChildBuilderDelegate<Map<String, dynamic>>(
+// //             itemBuilder: (context, item, index) => InkWell(
+// //               onTap: () {
+// //                 buttonSlideAnimation(
+// //                   context,
+// //                   GroupSpendItem(
+// //                       groupId: item['groupId'],
+// //                       paymentId: item['transactionId']),
+// //                 );
+// //                 print(item);
+// //               },
+// //               child: Column(
+// //                 children: [
+// //                   Container(
+// //                     padding:
+// //                         EdgeInsets.symmetric(horizontal: 10.w, vertical: 20.h),
+// //                     child: Row(
+// //                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+// //                       children: [
+// //                         Row(
+// //                           children: [
+// //                             Text(
+// //                               item['transactionDate'],
+// //                               style: TextStyle(fontSize: 13.sp),
+// //                             ),
+// //                             SizedBox(width: 25.w),
+// //                             Text(
+// //                               item['transactionSummary'],
+// //                               style: TextStyle(fontSize: 20.sp),
+// //                             ),
+// //                           ],
+// //                         ),
+// //                         item['transactionType'] == "1"
+// //                             ? Column(
+// //                                 children: [
+// //                                   Text(
+// //                                     '${NumberFormat('#,###').format(int.parse(item['transactionBalance'].toString()))}원',
+// //                                     style: TextStyle(
+// //                                       fontSize: 20.sp,
+// //                                       fontWeight: FontWeight.bold,
+// //                                       color: TEXT_COLOR,
+// //                                     ),
+// //                                   ),
+// //                                   Text(
+// //                                     '${NumberFormat('#,###').format(int.parse(item['transactionAfterBalance'].toString()))}원',
+// //                                     style: TextStyle(
+// //                                       color: RECEIPT_TEXT_COLOR,
+// //                                     ),
+// //                                   ),
+// //                                 ],
+// //                               )
+// //                             : Column(
+// //                                 children: [
+// //                                   Text(
+// //                                     '-${NumberFormat('#,###').format(int.parse(item['transactionBalance'].toString()))}원',
+// //                                     style: TextStyle(
+// //                                       fontSize: 20.sp,
+// //                                       fontWeight: FontWeight.bold,
+// //                                       color: RECEIPT_TEXT_COLOR,
+// //                                     ),
+// //                                   ),
+// //                                   Text(
+// //                                     '${NumberFormat('#,###').format(int.parse(item['transactionAfterBalance'].toString()))}원',
+// //                                     style: TextStyle(
+// //                                       color: RECEIPT_TEXT_COLOR,
+// //                                     ),
+// //                                   ),
+// //                                 ],
+// //                               ),
+// //                       ],
+// //                     ),
+// //                   ),
+// //                   CustomDivider(),
+// //                 ],
+// //               ),
+// //             ),
+// //             firstPageErrorIndicatorBuilder: (context) => Center(
+// //               child: Text('에러 발생'),
+// //             ),
+// //             noItemsFoundIndicatorBuilder: (context) => Center(
+// //               child: Text('아이템이 없습니다'),
+// //             ),
+// //           ),
+// //         ),
+// //       ),
+// //     );
+// //   }
+// // }
+//
+// import 'package:flutter/material.dart';
+// import 'package:flutter_screenutil/flutter_screenutil.dart';
+// import 'package:front/components/mypage/GroupSpendItem.dart';
+// import 'package:front/entities/GroupPayment.dart';
+// import 'package:front/components/groups/GroupCalDetail.dart';
+//
+// class GroupCalList extends StatelessWidget {
+//   final int groupId;
+//
+//   GroupCalList({Key? key, required this.groupId}) : super(key: key);
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Expanded(
+//       child: ListView.builder(
+//         itemCount: transactions.length,
+//         itemBuilder: (context, index) {
+//           var transaction = transactions[index];
+//           return ListTile(
+//             title: Text(
+//               transaction['transactionSummary'] ?? '정산 내역 없음',
+//               style: TextStyle(fontSize: 16.sp),
+//             ),
+//             subtitle: Text(
+//               '${transaction['transactionDate']} ${transaction['transactionTime']}',
+//               style: TextStyle(fontSize: 14.sp),
+//             ),
+//             trailing: Text(
+//               '${transaction['transactionBalance']}원',
+//               style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
+//             ),
+//             onTap: () {
+//               Navigator.push(
+//                 context,
+//                 MaterialPageRoute(
+//                   builder: (context) => GroupSpendItem(groupId: groupId, paymentId: transaction['transactionId']),
+//                 ),
+//               );
+//             },
+//           );
+//         },
+//       ),
+//     );
+//   }
+// }

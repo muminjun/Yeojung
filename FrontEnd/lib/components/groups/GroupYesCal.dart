@@ -1,6 +1,8 @@
 import 'dart:math';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:front/components/groups/GroupCalList.dart';
 import 'package:front/components/groups/GroupJoinMember.dart';
 import 'package:front/components/mypage/GroupSpendList.dart';
 import 'package:front/models/button/Button.dart';
@@ -25,7 +27,6 @@ class GroupYesCal extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-
               Text(
                 '정산 요청 내역',
                 style: TextStyle(
@@ -55,7 +56,7 @@ class GroupYesCal extends StatelessWidget {
                       ),
                     ),
                   ),
-                  SizedBox(width: 10.w),
+                  SizedBox(width: 5.w),
                   ElevatedButton(
                     onPressed: () => buttonSlideAnimation(
                         context,
@@ -64,15 +65,15 @@ class GroupYesCal extends StatelessWidget {
                         )),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: BUTTON_COLOR,
-                      minimumSize: Size(60.w, 30.h),
+                      minimumSize: Size(10.w, 30.h),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
                       ),
                     ),
                     child: Text(
-                      '추가',
+                      '+',
                       style: TextStyle(
-                        fontSize: min(16.sp, 30.sp),
+                        // fontSize: min(16.sp, 30.sp),
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
                       ),
@@ -83,10 +84,12 @@ class GroupYesCal extends StatelessWidget {
             ],
           ),
         ),
-        Container(
-
-        ),
+        // Expanded(
+        //   child:
+        //   GroupCalList(groupId: groupId)
+        // ),
       ],
+
     );
   }
 }

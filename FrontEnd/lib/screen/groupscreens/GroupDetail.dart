@@ -74,7 +74,7 @@ class GroupDetail extends StatelessWidget {
                           SizedBox(height: 16.0.h),
                           Divider(height: 16.0.h, color: Colors.grey),
                           SizedBox(height: 16.0.h),
-                          MyGroupRequest(requestDetails: '정보들'),
+                          // MyGroupRequest(groupId: groupId),
                         ],
                       ),
                     ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:front/components/groups/GroupCheck.dart';
 import 'package:front/components/groups/GroupJoinMember.dart';
 import 'package:front/components/groups/GroupYesCal.dart';
 import 'package:front/components/groups/GroupNoCal.dart';
@@ -72,13 +73,14 @@ class GroupItem extends StatelessWidget {
                           child: GroupJoinMember(group: group),
                         ),
                       ),
+                      // GroupCheck(groupId: groupId),
                       // 정산하기 버튼
                       Button(
                         btnText: '정산하기',
                         onPressed: () {},
                       ),
-                      // 정산요청 내역이 있으면
-                      // 정산 요청 내역
+                      // // 정산요청 내역이 있으면
+                      // // 정산 요청 내역
                       GroupYesCal(
                         groupId: group.groupId ?? 0,
                       ),
