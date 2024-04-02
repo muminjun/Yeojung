@@ -21,7 +21,8 @@ class _MySpendListState extends State<MySpendList> {
   static const _pageSize = 10;
 
   // 무한스크롤 페이지네이션 시작(첫 페이지: 0)
-  final PagingController<int, Map<String, dynamic>> _pagingController = PagingController(firstPageKey: 0);
+  final PagingController<int, Map<String, dynamic>> _pagingController =
+      PagingController(firstPageKey: 0);
 
   @override
   void initState() {
@@ -45,9 +46,12 @@ class _MySpendListState extends State<MySpendList> {
       };
       Response res = await getMyAccount(queryParameters);
       if (res.data != null) {
-        List<Map<String, dynamic>> newData = List<Map<String, dynamic>>.from(res.data).cast<Map<String, dynamic>>();
+        List<Map<String, dynamic>> newData =
+            List<Map<String, dynamic>>.from(res.data)
+                .cast<Map<String, dynamic>>();
 
-        newData.sort((a, b) => b["transactionUniqueNo"].compareTo(a["transactionUniqueNo"]));
+        newData.sort((a, b) =>
+            b["transactionUniqueNo"].compareTo(a["transactionUniqueNo"]));
 
         final isLastPage = newData.length < _pageSize;
         if (isLastPage) {
@@ -84,7 +88,8 @@ class _MySpendListState extends State<MySpendList> {
               child: Column(
                 children: [
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 20.h),
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 10.w, vertical: 20.h),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -95,9 +100,18 @@ class _MySpendListState extends State<MySpendList> {
                               style: TextStyle(fontSize: 13.sp),
                             ),
                             SizedBox(width: 25.w),
-                            Text(
-                              item['transactionSummary'],
-                              style: TextStyle(fontSize: 20.sp),
+
+// 여기 Container임..
+
+                            Container(
+                              constraints: BoxConstraints(maxWidth: 150.w),
+                              child: Text(
+                                item['transactionSummary'].length > 7
+                                    ? '${item['transactionSummary'].substring(0, 7)}...'
+                                    : item['transactionSummary'],
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(fontSize: 20.sp),
+                              ),
                             ),
                           ],
                         ),

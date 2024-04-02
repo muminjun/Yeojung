@@ -34,7 +34,7 @@ class _ButtonState extends State<GroupAddButton> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Text(
-                    '여행 그룹 만들기',
+                    '여행 그룹\n만들기',
                     style: TextStyle(
                       fontSize: 20.sp,
                       color: Colors.black,
