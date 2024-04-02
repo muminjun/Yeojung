@@ -23,12 +23,13 @@ class MainNowTravelCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(15),
         ),
         child: ListTile(
+          contentPadding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0), // Card 내부 여백 조절
           tileColor: Colors.white,
           onTap: onTap,
           title: Row(
             children: [
               Icon(Icons.arrow_circle_right_rounded,
-              color: BUTTON_COLOR,),
+                color: BUTTON_COLOR,),
               SizedBox(
                 width: 6.w,
               ),
@@ -42,7 +43,7 @@ class MainNowTravelCard extends StatelessWidget {
             ],
           ),
 
-          subtitle: SizedBox(
+          subtitle: Container(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -60,7 +61,6 @@ class MainNowTravelCard extends StatelessWidget {
                   height: 10.h,
                 ),
                 Row(
-                  // mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
                       group.startDate,
@@ -69,9 +69,6 @@ class MainNowTravelCard extends StatelessWidget {
                         fontSize: subFontSize,
                       ),
                     ),
-                    // SizedBox(
-                    //   width: 5.w,
-                    // ),
                     Text(
                       '~',
                       style: TextStyle(
@@ -79,9 +76,6 @@ class MainNowTravelCard extends StatelessWidget {
                         fontSize: subFontSize,
                       ),
                     ),
-                    // SizedBox(
-                    //   width: 5.w,
-                    // ),
                     Text(
                       group.endDate,
                       style: TextStyle(

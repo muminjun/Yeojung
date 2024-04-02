@@ -53,29 +53,27 @@ class _NowTravelListState extends State<NowTravelList> {
     }
 
     return Scaffold(
-      body: Center(
-        child: CarouselSlider.builder(
-          itemCount: ongoingGroups.length,
-          itemBuilder: (context, index, realIndex) {
-            return MainNowTravelCard(
-              group: ongoingGroups[index],
-              onTap: () {
-                navigateToGroupDetail(ongoingGroups[index]);
-              },
-              isCenter: index == _currentPage,
-            );
-          },
-          options: CarouselOptions(
-              autoPlay: false,
-              aspectRatio: 3.0,
-              enlargeCenterPage: true,
-              viewportFraction: 0.5,
-              onPageChanged: (index, reason) {
-                setState(() {
-                  _currentPage = index;
-                });
-              }),
-        ),
+      body: CarouselSlider.builder(
+        itemCount: ongoingGroups.length,
+        itemBuilder: (context, index, realIndex) {
+          return MainNowTravelCard(
+            group: ongoingGroups[index],
+            onTap: () {
+              navigateToGroupDetail(ongoingGroups[index]);
+            },
+            isCenter: index == _currentPage,
+          );
+        },
+        options: CarouselOptions(
+            autoPlay: false,
+            aspectRatio: 2.0,
+            enlargeCenterPage: true,
+            viewportFraction: 0.6,
+            onPageChanged: (index, reason) {
+              setState(() {
+                _currentPage = index;
+              });
+            }),
       ),
     );
   }
