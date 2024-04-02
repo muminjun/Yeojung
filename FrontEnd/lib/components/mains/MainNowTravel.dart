@@ -56,7 +56,7 @@ class _NowTravelListState extends State<NowTravelList> {
     return Scaffold(
       body: Center(
         child: Container(
-          height: 140.h,
+          height: 150.h,
           child: CarouselSlider.builder(
             itemCount: ongoingGroups.length,
             itemBuilder: (context, index, realIndex) {
