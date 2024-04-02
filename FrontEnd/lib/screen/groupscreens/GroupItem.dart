@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:front/components/groups/GroupCalCheck.dart';
 import 'package:front/components/groups/GroupJoinMember.dart';
+import 'package:front/models/button/GroupAddButton2.dart';
 import 'package:front/models/button/SizedButton.dart';
 import 'package:front/repository/api/ApiGroup.dart';
 import 'package:front/screen/groupscreens/GroupDetail.dart';
@@ -130,15 +131,12 @@ class _GroupItemState extends State<GroupItem> {
                         ),
                       ),
                       // 정산하기 버튼
-                      SizedButton(
-                        size: ButtonSize.l,
+                      GroupAddButton2(
                         btnText: !_isPollingActive ? '정산하기' : '취소하기',
                         onPressed: () {
                           handleSettleButtonPressed();
                         },
                       ),
-                      // 정산요청 내역이 있으면
-                      // 정산 요청 내역
                       GroupCalCheck(
                         groupId: group.groupId ?? 0,
                       ),
