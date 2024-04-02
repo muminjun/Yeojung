@@ -124,7 +124,6 @@ class _GroupEmailFindFieldState extends State<GroupEmailFindField> {
             },
           ),
         ),
-        // 사용자 정보 리스트를 화면에 표시합니다.
         if (userInfoList.isNotEmpty)
           Container(
             width: 210.w,
@@ -165,20 +164,19 @@ class _GroupEmailFindFieldState extends State<GroupEmailFindField> {
               widget.onInvite(inviteMember);
               Navigator.of(context).pop();
             } else {
-              // userInfoList.length가 0일 경우, Toast 메시지를 표시
               Fluttertoast.showToast(
-                msg: "이메일을 추가해주세요", // 표시할 메시지
-                toastLength: Toast.LENGTH_SHORT, // Toast 지속 시간
-                gravity: ToastGravity.CENTER, // Toast 위치
+                msg: "이메일을 추가해주세요",
+                toastLength: Toast.LENGTH_SHORT,
+                gravity: ToastGravity.CENTER,
                 timeInSecForIosWeb: 1,
-                backgroundColor: Colors.white, // 배경색
-                textColor: Colors.red, // 텍스트 색상
-                fontSize: 16.0, // 텍스트 크기
+                backgroundColor: Colors.white,
+                textColor: Colors.red,
+                fontSize: 16.0,
               );
             }
           },
           style: TextButton.styleFrom(
-            backgroundColor: userInfoList.length > 0 ? BUTTON_COLOR : Colors.grey, // userInfoList의 길이가 0이면 회색으로 설정
+            backgroundColor: userInfoList.length > 0 ? BUTTON_COLOR : Colors.grey,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(15),
             ),
