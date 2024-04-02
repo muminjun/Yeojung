@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:front/components/mains/MainNowTravelCard.dart';
 import 'package:front/screen/groupscreens/GroupItem.dart';
 import 'package:front/screen/groupscreens/GroupAdd.dart';
@@ -46,34 +47,39 @@ class _NowTravelListState extends State<NowTravelList> {
         child: Scaffold(
           body: Center(
               child: Column(
-            children: [GroupAddButton(onPressed: navigateToGroupAdd)],
-          )),
+                children: [GroupAddButton(onPressed: navigateToGroupAdd)],
+              )),
         ),
       );
     }
 
     return Scaffold(
-      body: CarouselSlider.builder(
-        itemCount: ongoingGroups.length,
-        itemBuilder: (context, index, realIndex) {
-          return MainNowTravelCard(
-            group: ongoingGroups[index],
-            onTap: () {
-              navigateToGroupDetail(ongoingGroups[index]);
+      body: Center(
+        child: Container(
+          height: 140.h,
+          child: CarouselSlider.builder(
+            itemCount: ongoingGroups.length,
+            itemBuilder: (context, index, realIndex) {
+              return MainNowTravelCard(
+                group: ongoingGroups[index],
+                onTap: () {
+                  navigateToGroupDetail(ongoingGroups[index]);
+                },
+                isCenter: index == _currentPage,
+              );
             },
-            isCenter: index == _currentPage,
-          );
-        },
-        options: CarouselOptions(
-            autoPlay: false,
-            aspectRatio: 2.0,
-            enlargeCenterPage: true,
-            viewportFraction: 0.6,
-            onPageChanged: (index, reason) {
-              setState(() {
-                _currentPage = index;
-              });
-            }),
+            options: CarouselOptions(
+                autoPlay: false,
+                aspectRatio: 3.0,
+                enlargeCenterPage: true,
+                viewportFraction: 0.6,
+                onPageChanged: (index, reason) {
+                  setState(() {
+                    _currentPage = index;
+                  });
+                }),
+          ),
+        ),
       ),
     );
   }

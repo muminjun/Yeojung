@@ -89,9 +89,11 @@ class _MainPageState extends State<MainPage> {
                       ],
                     ),
                   )
-                : Expanded(
-                    child: NowTravelList(groups: groups),
-                  ),
+                : Container(
+                  child: Expanded(
+                      child: NowTravelList(groups: groups),
+                    ),
+                ),
                   Expanded(
                     child: AdCarousel(),
                   ),
