@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:front/components/groups/GroupEmailFindInviteMemberCard.dart';
 import 'package:front/const/colors/Colors.dart';
 import '../../entities/Member.dart';
@@ -164,15 +165,15 @@ class _GroupEmailFindFieldState extends State<GroupEmailFindField> {
               widget.onInvite(inviteMember);
               Navigator.of(context).pop();
             } else {
-              // userInfoList.length가 0일 경우, '추가해주세요' 메시지를 표시
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    '이메일을 추가해주세요',
-                    style: TextStyle(color: Colors.red), // 빨간 글씨로 표시
-                  ),
-                  backgroundColor: Colors.white, // 스낵바 배경을 하얀색으로 설정
-                ),
+              // userInfoList.length가 0일 경우, Toast 메시지를 표시
+              Fluttertoast.showToast(
+                msg: "이메일을 추가해주세요", // 표시할 메시지
+                toastLength: Toast.LENGTH_SHORT, // Toast 지속 시간
+                gravity: ToastGravity.CENTER, // Toast 위치
+                timeInSecForIosWeb: 1,
+                backgroundColor: Colors.white, // 배경색
+                textColor: Colors.red, // 텍스트 색상
+                fontSize: 16.0, // 텍스트 크기
               );
             }
           },
