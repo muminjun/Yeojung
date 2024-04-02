@@ -153,22 +153,37 @@ class _GroupEmailFindFieldState extends State<GroupEmailFindField> {
               },
             ),
           ),
+        SizedBox(height: 10.h,),
         TextButton(
           child: Text(
             '초대하기',
             style: TextStyle(color: Colors.white),
           ),
           onPressed: () {
-            widget.onInvite(inviteMember);
-            Navigator.of(context).pop();
+            if (userInfoList.length > 0) {
+              widget.onInvite(inviteMember);
+              Navigator.of(context).pop();
+            } else {
+              // userInfoList.length가 0일 경우, '추가해주세요' 메시지를 표시
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    '이메일을 추가해주세요',
+                    style: TextStyle(color: Colors.red), // 빨간 글씨로 표시
+                  ),
+                  backgroundColor: Colors.white, // 스낵바 배경을 하얀색으로 설정
+                ),
+              );
+            }
           },
           style: TextButton.styleFrom(
-            backgroundColor: BUTTON_COLOR,
+            backgroundColor: userInfoList.length > 0 ? BUTTON_COLOR : Colors.grey, // userInfoList의 길이가 0이면 회색으로 설정
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(15),
             ),
           ),
         ),
+
       ],
     );
   }
