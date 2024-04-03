@@ -49,6 +49,10 @@ class _MainPageState extends State<MainPage> {
     return Scaffold(
         appBar: AppBar(
           scrolledUnderElevation: 0,
+          leading: Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Image.asset('assets/images/orange_logo.png'),
+          ),
         ),
         body: Padding(
           padding: EdgeInsets.symmetric(horizontal: 10.w),
