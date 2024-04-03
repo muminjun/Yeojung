@@ -20,6 +20,7 @@ import java.util.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.UnexpectedRollbackException;
 import org.springframework.transaction.annotation.Transactional;
@@ -530,12 +531,15 @@ public class PaymentServiceImpl implements PaymentService {
             LocalTime transactionTime =
                     LocalTime.parse(receiptRequestDto.getDate(), dateTimeFormatter);
 
-            Transaction transaction =
+            List<Transaction> transactionList =
                     transactionRepository
                             .findApproximateReceiptComparingBalanceApostropheForeignkey(
                                     receiptRequestDto.getApprovalAmount(),
                                     transactionDate,
-                                    kakaoId);
+                                    kakaoId,
+                                    PageRequest.of(0, 1));
+
+            Transaction transaction = transactionList.get(0);
 
             // 2-1. 업로드한 영수증에 해당하는 결제 정보 (Record)를 Transaction 테이블에서 찾을 수 없는 경우 예외 발생
             if (transaction == null) {
@@ -594,18 +598,20 @@ public class PaymentServiceImpl implements PaymentService {
                         transactionQueryRepository.getTransactionMember(
                                 transaction.getTransactionId());
                 int memberCnt = transactionMembers.size();
-                long amount = receipt.getApprovalAmount();
+                long amount = receiptDetail.getCount() * receiptDetail.getUnitPrice();
                 int remainder = (int) (amount - amount / memberCnt * memberCnt);
-                for (TransactionMember dto : transactionMembers) {
-                    ReceiptDetailMember receiptDetailMember = new ReceiptDetailMember();
-                    ReceiptDetailMemberPK pk = new ReceiptDetailMemberPK();
-                    pk.setReceiptDetail(receiptDetail);
+                if (transactionMembers.size() > 0) {
+                    for (TransactionMember dto : transactionMembers) {
+                        ReceiptDetailMember receiptDetailMember = new ReceiptDetailMember();
+                        ReceiptDetailMemberPK pk = new ReceiptDetailMemberPK();
+                        pk.setReceiptDetail(receiptDetail);
 
-                    pk.setMember(dto.getTransactionMemberPK().getMember());
-                    receiptDetailMember.setReceiptDetailMemberPK(pk);
-                    receiptDetailMember.setAmountDue(amount / memberCnt);
+                        pk.setMember(dto.getTransactionMemberPK().getMember());
+                        receiptDetailMember.setReceiptDetailMemberPK(pk);
+                        receiptDetailMember.setAmountDue(amount / memberCnt);
 
-                    receiptDetailMemberRepository.save(receiptDetailMember);
+                        receiptDetailMemberRepository.save(receiptDetailMember);
+                    }
                 }
 
                 transactionDetail.setRemainder(remainder);
