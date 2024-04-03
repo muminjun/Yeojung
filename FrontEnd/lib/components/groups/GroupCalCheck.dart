@@ -207,11 +207,11 @@ class _GroupCalCheckState extends State<GroupCalCheck> {
                                 ),
                                 SizedBox(width: 25.w),
                                 Container(
-                                  constraints: BoxConstraints(maxWidth: 150.w),
+                                  constraints: BoxConstraints(maxWidth: 120.w),
                                   child: Text(
                                     item['transactionSummary'],
                                     overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(fontSize: 20.sp),
+                                    style: TextStyle(fontSize: 18.sp),
                                   ),
                                 ),
                               ],
@@ -221,7 +221,7 @@ class _GroupCalCheckState extends State<GroupCalCheck> {
                                 Text(
                                   '-${NumberFormat('#,###').format(int.parse(item['transactionBalance'].toString()))}원',
                                   style: TextStyle(
-                                    fontSize: 20.sp,
+                                    fontSize: 18.sp,
                                     color: RECEIPT_TEXT_COLOR,
                                   ),
                                 ),

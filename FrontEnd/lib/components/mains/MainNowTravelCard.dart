@@ -17,9 +17,9 @@ class MainNowTravelCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double fontSize = isCenter ? 20.sp : 15.sp;
-    double themeSize = isCenter ? 30.sp : 25.sp;
-    double subFontSize = isCenter ? 12.sp : 8.sp;
+    double fontSize = isCenter ? 15.sp : 10.sp;
+    double themeSize = isCenter ? 20.sp : 15.sp;
+    double subFontSize = isCenter ? 10.sp : 6.sp;
     return GestureDetector(
       onTap: onTap,
       child: Card(
