@@ -57,6 +57,7 @@ class _NowTravelListState extends State<NowTravelList> {
       body: Center(
         child: Container(
           height: 200.h,
+          // width: ,
           child: CarouselSlider.builder(
             itemCount: ongoingGroups.length,
             itemBuilder: (context, index, realIndex) {
@@ -70,7 +71,7 @@ class _NowTravelListState extends State<NowTravelList> {
             },
             options: CarouselOptions(
                 autoPlay: false,
-                aspectRatio: 3.0,
+                aspectRatio: 2.5,
                 enlargeCenterPage: true,
                 viewportFraction: 0.6,
                 onPageChanged: (index, reason) {
