@@ -34,7 +34,7 @@ class GroupCard extends StatelessWidget {
                 group.startDate,
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 13.sp,
+                  fontSize: 10.sp,
                 ),
               ),
               SizedBox(
@@ -44,7 +44,7 @@ class GroupCard extends StatelessWidget {
                 '~',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 13.sp,
+                  fontSize: 10.sp,
                 ),
               ),
               SizedBox(
@@ -54,7 +54,7 @@ class GroupCard extends StatelessWidget {
                 group.endDate,
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 13.sp,
+                  fontSize: 10.sp,
                 ),
               ),
             ],
@@ -66,7 +66,7 @@ class GroupCard extends StatelessWidget {
                 group.groupName,
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 25.sp,
+                  fontSize: 20.sp,
                   fontWeight: FontWeight.bold,
                 ),
               ),
